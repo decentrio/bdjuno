@@ -2,7 +2,7 @@ package source
 
 import (
 	"cosmossdk.io/math"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	minttypes "github.com/realiotech/realio-network/x/mint/types"
 )
 
 type Source interface {

@@ -5,7 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	minttypes "github.com/realiotech/realio-network/x/mint/types"
 	"github.com/forbole/juno/v6/node/local"
 
 	mintsource "github.com/forbole/callisto/v4/modules/mint/source"

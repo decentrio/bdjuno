@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"cosmossdk.io/math"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	minttypes "github.com/realiotech/realio-network/x/mint/types"
 
 	"github.com/forbole/callisto/v4/types"
 
@@ -76,9 +76,6 @@ func (suite *DbTestSuite) TestBigDipperDb_SaveMintParams() {
 	mintParams := minttypes.NewParams(
 		"udaric",
 		math.LegacyNewDecWithPrec(4, 1),
-		math.LegacyNewDecWithPrec(8, 1),
-		math.LegacyNewDecWithPrec(4, 1),
-		math.LegacyNewDecWithPrec(8, 1),
 		5006000,
 	)
 	err := suite.database.SaveMintParams(types.NewMintParams(mintParams, 10))

@@ -11,15 +11,16 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/forbole/juno/v6/node/local"
+	mintkeeper "github.com/realiotech/realio-network/x/mint/keeper"
+	minttypes "github.com/realiotech/realio-network/x/mint/types"
 
 	nodeconfig "github.com/forbole/juno/v6/node/config"
 
+	"cosmossdk.io/log"
 	banksource "github.com/forbole/callisto/v4/modules/bank/source"
 	localbanksource "github.com/forbole/callisto/v4/modules/bank/source/local"
 	remotebanksource "github.com/forbole/callisto/v4/modules/bank/source/remote"
@@ -39,6 +40,8 @@ import (
 	localstakingsource "github.com/forbole/callisto/v4/modules/staking/source/local"
 	remotestakingsource "github.com/forbole/callisto/v4/modules/staking/source/remote"
 	"github.com/forbole/callisto/v4/utils/simapp"
+	realioapp "github.com/realiotech/realio-network/app"
+	"github.com/spf13/viper"
 )
 
 type Sources struct {
@@ -69,12 +72,15 @@ func buildLocalSources(cfg *local.Details, cdc codec.Codec) (*Sources, error) {
 	}
 
 	app := simapp.NewSimApp(cdc)
-
+	realioApp := realioapp.New(
+		log.NewNopLogger(), source.StoreDB, nil, true, map[int64]bool{},
+		cfg.Home, 0, realioapp.MakeEncodingConfig(), viper.New(),
+	)
 	sources := &Sources{
 		BankSource:     localbanksource.NewSource(source, banktypes.QueryServer(app.BankKeeper)),
 		DistrSource:    localdistrsource.NewSource(source, distrkeeper.NewQuerier(app.DistrKeeper)),
 		GovSource:      localgovsource.NewSource(source, govkeeper.NewQueryServer(&app.GovKeeper)),
-		MintSource:     localmintsource.NewSource(source, mintkeeper.NewQueryServerImpl(app.MintKeeper)),
+		MintSource:     localmintsource.NewSource(source, mintkeeper.NewQueryServerImpl(realioApp.MintKeeper)),
 		SlashingSource: localslashingsource.NewSource(source, slashingtypes.QueryServer(app.SlashingKeeper)),
 		StakingSource:  localstakingsource.NewSource(source, stakingkeeper.Querier{Keeper: app.StakingKeeper}),
 	}
