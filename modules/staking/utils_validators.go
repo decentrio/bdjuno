@@ -3,6 +3,7 @@ package staking
 import (
 	"fmt"
 
+	"cosmossdk.io/math"
 	"github.com/forbole/callisto/v4/modules/staking/keybase"
 	"github.com/forbole/callisto/v4/types"
 
@@ -251,11 +252,12 @@ func (m *Module) updateProposalValidatorStatusSnapshot(
 		if err != nil {
 			return err
 		}
+		divisor, _ := math.NewIntFromString("1000000000000000000")
 
 		snapshots[index] = types.NewProposalValidatorStatusSnapshot(
 			proposalID,
 			consAddr.String(),
-			validator.Tokens.Int64(),
+			validator.Tokens.Quo(divisor).Int64(),
 			validator.Status,
 			validator.Jailed,
 			height,
@@ -287,8 +289,8 @@ func (m *Module) updateValidatorStatusAndVP(height int64, validators []stakingty
 		if err != nil {
 			return err
 		}
-
-		votingPowers[index] = types.NewValidatorVotingPower(consAddr.String(), validator.Tokens.Int64(), height)
+		divisor, _ := math.NewIntFromString("1000000000000000000")
+		votingPowers[index] = types.NewValidatorVotingPower(consAddr.String(), validator.Tokens.Quo(divisor).Int64(), height)
 
 		statuses[index] = types.NewValidatorStatus(
 			consAddr.String(),
