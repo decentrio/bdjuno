@@ -8,3 +8,10 @@ CREATE TABLE supply
     CHECK (one_row_id)
 );
 CREATE INDEX supply_height_index ON supply (height);
+
+CREATE TABLE token_holder
+(
+    denom      TEXT    NOT NULL ,
+    num_holder BIGINT  NOT NULL,
+    height     BIGINT  NOT NULL
+);
