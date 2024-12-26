@@ -77,3 +77,32 @@ func (s Source) GetSupply(height int64) (sdk.Coins, error) {
 
 	return coins, nil
 }
+
+// GetDenomOwners implements bankkeeper.Source
+func (s Source) GetDenomOwners(height int64, denom string) (int, error) {
+	ctx := remote.GetHeightRequestContext(s.Ctx, height)
+
+	var holders []*banktypes.DenomOwner
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := s.bankClient.DenomOwners(
+			ctx,
+			&banktypes.QueryDenomOwnersRequest{
+				Denom: denom,
+				Pagination: &query.PageRequest{
+					Key:   nextKey,
+					Limit: 100,
+				},
+			})
+		if err != nil {
+			return 0, fmt.Errorf("error while getting holders: %s", err)
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = len(res.Pagination.NextKey) == 0
+		holders = append(holders, res.DenomOwners...)
+	}
+
+	return len(holders), nil
+}

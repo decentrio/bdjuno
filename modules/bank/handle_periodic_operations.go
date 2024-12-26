@@ -6,6 +6,7 @@ import (
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/forbole/callisto/v4/modules/utils"
 )
 
@@ -37,5 +38,33 @@ func (m *Module) UpdateSupply() error {
 		return err
 	}
 
-	return m.db.SaveSupply(supply, block.Height)
+	err = m.db.SaveSupply(supply, block.Height)
+	if err != nil {
+		return err
+	}
+
+	err = m.updateTokenHolder(block.Height, supply)
+	return err
+}
+
+// updateTokenHolder updates num holder of all the tokens
+func (m *Module) updateTokenHolder(height int64, tokens sdk.Coins) error {
+	log.Trace().Str("module", "bank").Str("operation", "total holder").
+		Msg("updating token holder")
+
+	total := make(map[string]int)
+	for _, tokenUnit := range tokens {
+		denom := tokenUnit.Denom
+		numHolders, err := m.keeper.GetDenomOwners(height, denom)
+		if err != nil {
+			return fmt.Errorf("error while updating holder: %s", err)
+		}
+
+		total[denom] = numHolders
+	}
+
+	if len(total) == 0 {
+		return nil
+	}
+	return m.db.SaveTokenHolder(total, height)
 }
