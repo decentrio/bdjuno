@@ -18,6 +18,7 @@ import (
 	"github.com/forbole/callisto/v4/utils"
 
 	"github.com/forbole/callisto/v4/database"
+	"github.com/forbole/callisto/v4/modules/asset"
 	"github.com/forbole/callisto/v4/modules/auth"
 	"github.com/forbole/callisto/v4/modules/bank"
 	"github.com/forbole/callisto/v4/modules/consensus"
@@ -90,6 +91,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	stakingModule := staking.NewModule(sources.StakingSource, r.cdc, db)
 	govModule := gov.NewModule(sources.GovSource, distrModule, mintModule, slashingModule, stakingModule, r.cdc, db)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
+	assetModule := asset.NewModule(sources.AssetSource, r.cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, ctx.Database),
@@ -111,5 +113,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		slashingModule,
 		stakingModule,
 		upgradeModule,
+		assetModule,
 	}
 }
