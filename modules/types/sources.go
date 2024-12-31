@@ -37,6 +37,9 @@ import (
 	mintsource "github.com/forbole/callisto/v4/modules/mint/source"
 	localmintsource "github.com/forbole/callisto/v4/modules/mint/source/local"
 	remotemintsource "github.com/forbole/callisto/v4/modules/mint/source/remote"
+	multistakingsource "github.com/forbole/callisto/v4/modules/multistaking/source"
+	localmultistakingsource "github.com/forbole/callisto/v4/modules/multistaking/source/local"
+	remotemultistakingsource "github.com/forbole/callisto/v4/modules/multistaking/source/remote"
 	slashingsource "github.com/forbole/callisto/v4/modules/slashing/source"
 	localslashingsource "github.com/forbole/callisto/v4/modules/slashing/source/local"
 	remoteslashingsource "github.com/forbole/callisto/v4/modules/slashing/source/remote"
@@ -44,19 +47,22 @@ import (
 	localstakingsource "github.com/forbole/callisto/v4/modules/staking/source/local"
 	remotestakingsource "github.com/forbole/callisto/v4/modules/staking/source/remote"
 	"github.com/forbole/callisto/v4/utils/simapp"
+	multistakingkeeper "github.com/realio-tech/multi-staking-module/x/multi-staking/keeper"
+	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 	realioapp "github.com/realiotech/realio-network/app"
 	assettypes "github.com/realiotech/realio-network/x/asset/types"
 	"github.com/spf13/viper"
 )
 
 type Sources struct {
-	BankSource     banksource.Source
-	DistrSource    distrsource.Source
-	GovSource      govsource.Source
-	MintSource     mintsource.Source
-	SlashingSource slashingsource.Source
-	StakingSource  stakingsource.Source
-	AssetSource    assetsource.Source
+	BankSource         banksource.Source
+	DistrSource        distrsource.Source
+	GovSource          govsource.Source
+	MintSource         mintsource.Source
+	SlashingSource     slashingsource.Source
+	StakingSource      stakingsource.Source
+	AssetSource        assetsource.Source
+	MultistakingSource multistakingsource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, cdc codec.Codec) (*Sources, error) {
@@ -83,13 +89,14 @@ func buildLocalSources(cfg *local.Details, cdc codec.Codec) (*Sources, error) {
 		cfg.Home, 0, realioapp.MakeEncodingConfig(), viper.New(),
 	)
 	sources := &Sources{
-		BankSource:     localbanksource.NewSource(source, banktypes.QueryServer(app.BankKeeper)),
-		DistrSource:    localdistrsource.NewSource(source, distrkeeper.NewQuerier(app.DistrKeeper)),
-		GovSource:      localgovsource.NewSource(source, govkeeper.NewQueryServer(&app.GovKeeper)),
-		MintSource:     localmintsource.NewSource(source, mintkeeper.NewQueryServerImpl(realioApp.MintKeeper)),
-		SlashingSource: localslashingsource.NewSource(source, slashingtypes.QueryServer(app.SlashingKeeper)),
-		StakingSource:  localstakingsource.NewSource(source, stakingkeeper.Querier{Keeper: app.StakingKeeper}),
-		AssetSource:    localassetsource.NewSource(source, assetkeeper.NewQueryServerImpl(realioApp.AssetKeeper)),
+		BankSource:         localbanksource.NewSource(source, banktypes.QueryServer(app.BankKeeper)),
+		DistrSource:        localdistrsource.NewSource(source, distrkeeper.NewQuerier(app.DistrKeeper)),
+		GovSource:          localgovsource.NewSource(source, govkeeper.NewQueryServer(&app.GovKeeper)),
+		MintSource:         localmintsource.NewSource(source, mintkeeper.NewQueryServerImpl(realioApp.MintKeeper)),
+		SlashingSource:     localslashingsource.NewSource(source, slashingtypes.QueryServer(app.SlashingKeeper)),
+		StakingSource:      localstakingsource.NewSource(source, stakingkeeper.Querier{Keeper: app.StakingKeeper}),
+		AssetSource:        localassetsource.NewSource(source, assetkeeper.NewQueryServerImpl(realioApp.AssetKeeper)),
+		MultistakingSource: localmultistakingsource.NewSource(source, multistakingkeeper.NewQueryServerImpl(realioApp.MultiStakingKeeper)),
 	}
 
 	// Mount and initialize the stores
@@ -113,12 +120,13 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 	}
 
 	return &Sources{
-		BankSource:     remotebanksource.NewSource(source, banktypes.NewQueryClient(source.GrpcConn)),
-		DistrSource:    remotedistrsource.NewSource(source, distrtypes.NewQueryClient(source.GrpcConn)),
-		GovSource:      remotegovsource.NewSource(source, govtypesv1.NewQueryClient(source.GrpcConn)),
-		MintSource:     remotemintsource.NewSource(source, minttypes.NewQueryClient(source.GrpcConn)),
-		SlashingSource: remoteslashingsource.NewSource(source, slashingtypes.NewQueryClient(source.GrpcConn)),
-		StakingSource:  remotestakingsource.NewSource(source, stakingtypes.NewQueryClient(source.GrpcConn)),
-		AssetSource:    remoteassetsource.NewSource(source, assettypes.NewQueryClient(source.GrpcConn)),
+		BankSource:         remotebanksource.NewSource(source, banktypes.NewQueryClient(source.GrpcConn)),
+		DistrSource:        remotedistrsource.NewSource(source, distrtypes.NewQueryClient(source.GrpcConn)),
+		GovSource:          remotegovsource.NewSource(source, govtypesv1.NewQueryClient(source.GrpcConn)),
+		MintSource:         remotemintsource.NewSource(source, minttypes.NewQueryClient(source.GrpcConn)),
+		SlashingSource:     remoteslashingsource.NewSource(source, slashingtypes.NewQueryClient(source.GrpcConn)),
+		StakingSource:      remotestakingsource.NewSource(source, stakingtypes.NewQueryClient(source.GrpcConn)),
+		AssetSource:        remoteassetsource.NewSource(source, assettypes.NewQueryClient(source.GrpcConn)),
+		MultistakingSource: remotemultistakingsource.NewSource(source, multistakingtypes.NewQueryClient(source.GrpcConn)),
 	}, nil
 }

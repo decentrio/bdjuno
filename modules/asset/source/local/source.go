@@ -29,7 +29,7 @@ func NewSource(source *local.Source, bk assettypes.QueryServer) *Source {
 	}
 }
 
-// GetSupply implements bankkeeper.Source
+// GetTokens implements Source
 func (s Source) GetTokens(height int64) ([]assettypes.Token, error) {
 	ctx, err := s.LoadHeight(height)
 	if err != nil {
