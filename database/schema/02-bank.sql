@@ -11,7 +11,9 @@ CREATE INDEX supply_height_index ON supply (height);
 
 CREATE TABLE token_holder
 (
-    denom      TEXT    NOT NULL ,
+    denom      TEXT    NOT NULL PRIMARY KEY,
     num_holder BIGINT  NOT NULL,
     height     BIGINT  NOT NULL
 );
+
+CREATE INDEX token_holder_height_index ON token_holder (height);
