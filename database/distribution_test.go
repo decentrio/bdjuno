@@ -11,7 +11,6 @@ import (
 	"github.com/forbole/callisto/v4/types"
 
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	bddbtypes "github.com/forbole/callisto/v4/database/types"
 )
 
 func (suite *DbTestSuite) TestBigDipperDb_SaveCommunityPool() {
@@ -21,8 +20,8 @@ func (suite *DbTestSuite) TestBigDipperDb_SaveCommunityPool() {
 	suite.Require().NoError(err)
 
 	// Verify data
-	expected := bddbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(original), 10)
-	var rows []bddbtypes.CommunityPoolRow
+	expected := dbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(original), 10)
+	var rows []dbtypes.CommunityPoolRow
 	err = suite.database.Sqlx.Select(&rows, `SELECT * FROM community_pool`)
 	suite.Require().NoError(err)
 	suite.Require().Len(rows, 1, "community_pool table should contain only one row")
@@ -36,8 +35,8 @@ func (suite *DbTestSuite) TestBigDipperDb_SaveCommunityPool() {
 	suite.Require().NoError(err)
 
 	// Verify data
-	expected = bddbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(original), 10)
-	rows = []bddbtypes.CommunityPoolRow{}
+	expected = dbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(original), 10)
+	rows = []dbtypes.CommunityPoolRow{}
 	err = suite.database.Sqlx.Select(&rows, `SELECT * FROM community_pool`)
 	suite.Require().NoError(err)
 	suite.Require().Len(rows, 1, "community_pool table should contain only one row")
@@ -51,8 +50,8 @@ func (suite *DbTestSuite) TestBigDipperDb_SaveCommunityPool() {
 	suite.Require().NoError(err)
 
 	// Verify data
-	expected = bddbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(coins), 10)
-	rows = []bddbtypes.CommunityPoolRow{}
+	expected = dbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(coins), 10)
+	rows = []dbtypes.CommunityPoolRow{}
 	err = suite.database.Sqlx.Select(&rows, `SELECT * FROM community_pool`)
 	suite.Require().NoError(err)
 	suite.Require().Len(rows, 1, "community_pool table should contain only one row")
@@ -66,8 +65,8 @@ func (suite *DbTestSuite) TestBigDipperDb_SaveCommunityPool() {
 	suite.Require().NoError(err)
 
 	// Verify data
-	expected = bddbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(coins), 11)
-	rows = []bddbtypes.CommunityPoolRow{}
+	expected = dbtypes.NewCommunityPoolRow(dbtypes.NewDbDecCoins(coins), 11)
+	rows = []dbtypes.CommunityPoolRow{}
 	err = suite.database.Sqlx.Select(&rows, `SELECT * FROM community_pool`)
 	suite.Require().NoError(err)
 	suite.Require().Len(rows, 1, "community_pool table should contain only one row")
