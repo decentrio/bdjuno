@@ -96,3 +96,35 @@ func (s Source) GetAccountBalance(address string, height int64) ([]sdk.Coin, err
 
 	return balRes.Balances, nil
 }
+
+// GetDenomOwners implements bankkeeper.Source
+func (s Source) GetDenomOwners(height int64, denom string) (int, error) {
+	ctx, err := s.LoadHeight(height)
+	if err != nil {
+		return 0, fmt.Errorf("error while loading height: %s", err)
+	}
+
+	var holders []*banktypes.DenomOwner
+	var nextKey []byte
+	var stop = false
+	for !stop {
+		res, err := s.q.DenomOwners(
+			sdk.WrapSDKContext(ctx),
+			&banktypes.QueryDenomOwnersRequest{
+				Denom: denom,
+				Pagination: &query.PageRequest{
+					Key:   nextKey,
+					Limit: 100,
+				},
+			})
+		if err != nil {
+			return 0, fmt.Errorf("error while getting holder: %s", err)
+		}
+
+		nextKey = res.Pagination.NextKey
+		stop = len(res.Pagination.NextKey) == 0
+		holders = append(holders, res.DenomOwners...)
+	}
+
+	return len(holders), nil
+}

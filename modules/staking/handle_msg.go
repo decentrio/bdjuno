@@ -8,7 +8,9 @@ import (
 
 	juno "github.com/forbole/juno/v6/types"
 
+	dbtypes "github.com/forbole/callisto/v4/database/types"
 	"github.com/forbole/callisto/v4/utils"
+	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 )
 
 var msgFilter = map[string]bool{
@@ -48,6 +50,12 @@ func (m *Module) HandleMsg(_ int, msg juno.Message, tx *juno.Transaction) error 
 		return m.UpdateValidatorStatuses()
 
 	case "/cosmos.staking.v1beta1.MsgBeginRedelegate":
+		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &stakingtypes.MsgBeginRedelegate{})
+		err := m.updateStakingEvent(int64(tx.Height), cosmosMsg)
+		if err != nil {
+			return err
+		}
+
 		return m.UpdateValidatorStatuses()
 
 	case "/cosmos.staking.v1beta1.MsgUndelegate":
@@ -67,7 +75,15 @@ func (m *Module) handleMsgCreateValidator(height int64, msg *stakingtypes.MsgCre
 	if err != nil {
 		return fmt.Errorf("error while refreshing validator from MsgCreateValidator: %s", err)
 	}
-	return nil
+
+	var infos []multistakingtypes.ValidatorInfo
+	validatorInfo := multistakingtypes.ValidatorInfo{
+		OperatorAddress: msg.ValidatorAddress,
+		BondDenom:       msg.Value.Denom,
+	}
+	infos = append(infos, validatorInfo)
+
+	return m.db.SaveValidatorDenom(height, infos)
 }
 
 // handleEditValidator handles MsgEditValidator utils, updating the validator info
@@ -78,4 +94,16 @@ func (m *Module) handleEditValidator(height int64, msg *stakingtypes.MsgEditVali
 	}
 
 	return nil
+}
+
+func (m *Module) updateStakingEvent(height int64, msg *stakingtypes.MsgBeginRedelegate) error {
+	var msEvents []dbtypes.MSEvent
+	event := dbtypes.MSEvent{
+		Name:    "redelegate",
+		ValAddr: msg.ValidatorSrcAddress,
+		DelAddr: msg.DelegatorAddress,
+		Amount:  msg.Amount.String(),
+	}
+	msEvents = append(msEvents, event)
+	return m.db.SaveMSEvent(msEvents, height)
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/forbole/callisto/v4/utils"
 
 	"github.com/forbole/callisto/v4/database"
+	"github.com/forbole/callisto/v4/modules/asset"
 	"github.com/forbole/callisto/v4/modules/auth"
 	"github.com/forbole/callisto/v4/modules/bank"
 	"github.com/forbole/callisto/v4/modules/consensus"
@@ -31,6 +32,7 @@ import (
 	messagetype "github.com/forbole/callisto/v4/modules/message_type"
 	"github.com/forbole/callisto/v4/modules/mint"
 	"github.com/forbole/callisto/v4/modules/modules"
+	"github.com/forbole/callisto/v4/modules/multistaking"
 	"github.com/forbole/callisto/v4/modules/pricefeed"
 	"github.com/forbole/callisto/v4/modules/staking"
 	"github.com/forbole/callisto/v4/modules/upgrade"
@@ -90,6 +92,8 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	stakingModule := staking.NewModule(sources.StakingSource, r.cdc, db)
 	govModule := gov.NewModule(sources.GovSource, distrModule, mintModule, slashingModule, stakingModule, r.cdc, db)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
+	assetModule := asset.NewModule(sources.AssetSource, r.cdc, db)
+	multistakingModule := multistaking.NewModule(sources.MultistakingSource, r.cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, ctx.Database),
@@ -111,5 +115,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		slashingModule,
 		stakingModule,
 		upgradeModule,
+		assetModule,
+		multistakingModule,
 	}
 }
