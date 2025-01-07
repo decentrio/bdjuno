@@ -29,6 +29,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/gogoproto/proto"
+	ethcryptocodec "github.com/realiotech/realio-network/crypto/codec"
+	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
+	bridgemoduletypes "github.com/realiotech/realio-network/x/bridge/types"
+	cryptocodec "github.com/evmos/os/crypto/codec"
+	ostypes "github.com/evmos/os/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 )
 
 var once sync.Once
@@ -38,6 +44,12 @@ func GetCodec() codec.Codec {
 	once.Do(func() {
 		interfaceRegistry := codectypes.NewInterfaceRegistry()
 		getBasicManagers().RegisterInterfaces(interfaceRegistry)
+		ostypes.RegisterInterfaces(interfaceRegistry)
+		ethcryptocodec.RegisterInterfaces(interfaceRegistry)
+		cryptocodec.RegisterInterfaces(interfaceRegistry)
+		ibcclienttypes.RegisterInterfaces(interfaceRegistry)
+		multistakingtypes.RegisterInterfaces(interfaceRegistry)
+		bridgemoduletypes.RegisterInterfaces(interfaceRegistry)
 		std.RegisterInterfaces(interfaceRegistry)
 		cdc = codec.NewProtoCodec(interfaceRegistry)
 	})

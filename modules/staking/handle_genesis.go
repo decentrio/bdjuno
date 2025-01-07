@@ -12,6 +12,7 @@ import (
 
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 
 	"github.com/rs/zerolog/log"
 )
@@ -21,12 +22,12 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 	log.Debug().Str("module", "staking").Msg("parsing genesis")
 
 	// Read the genesis state
-	var genState stakingtypes.GenesisState
-	err := m.cdc.UnmarshalJSON(appState[stakingtypes.ModuleName], &genState)
+	var msGenState multistakingtypes.GenesisState
+	err := m.cdc.UnmarshalJSON(appState[multistakingtypes.ModuleName], &msGenState)
 	if err != nil {
 		return fmt.Errorf("error while unmarshalling staking state: %s", err)
 	}
-
+	genState := msGenState.StakingGenesisState
 	// Save the params
 	err = m.db.SaveStakingParams(types.NewStakingParams(genState.Params, doc.InitialHeight))
 	if err != nil {
