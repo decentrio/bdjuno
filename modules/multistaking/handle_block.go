@@ -44,16 +44,6 @@ func (m *Module) updateTxsByEvent(height int64, events []abci.Event) error {
 				msEvents = append(msEvents, msEvent)
 			}
 
-		case stakingtypes.EventTypeRedelegate:
-			valAddr, _ := juno.FindAttributeByKey(event, stakingtypes.AttributeKeyValidator)
-			delAddr, _ := juno.FindAttributeByKey(event, stakingtypes.AttributeKeyDelegator)
-			amount, _ := juno.FindAttributeByKey(event, sdk.AttributeKeyAmount)
-			msEvent, err := dbtypes.NewMSEvent("redelegate", valAddr.Value, delAddr.Value, amount.Value)
-
-			if err == nil {
-				msEvents = append(msEvents, msEvent)
-			}
-
 		case stakingtypes.EventTypeUnbond:
 			valAddr, _ := juno.FindAttributeByKey(event, stakingtypes.AttributeKeyValidator)
 			delAddr, _ := juno.FindAttributeByKey(event, stakingtypes.AttributeKeyDelegator)

@@ -91,7 +91,7 @@ func (m *Module) UpdateBalance(addresses []string, height int64) error {
 	if err != nil {
 		return err
 	}
-	
+
 	err = m.db.SaveAccountBalances(accountBalances, height)
 	return err
 }

@@ -13,7 +13,7 @@ import (
 func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
 	log.Debug().Str("module", "multistaking").Msg("setting up periodic tasks")
 
-	if _, err := scheduler.Every(10).Minutes().Do(func() {
+	if _, err := scheduler.Every(5).Hour().Do(func() {
 		utils.WatchMethod(m.UpdateMultiStaking)
 	}); err != nil {
 		return fmt.Errorf("error while setting up multistaking token periodic operation: %s", err)

@@ -14,8 +14,6 @@ import (
 var (
 	_ modules.Module                   = &Module{}
 	_ modules.PeriodicOperationsModule = &Module{}
-	_ modules.MessageModule            = &Module{}
-	_ modules.AuthzMessageModule       = &Module{}
 	_ modules.BlockModule              = &Module{}
 )
 

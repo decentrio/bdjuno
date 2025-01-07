@@ -11,6 +11,8 @@ import (
 var (
 	_ modules.Module                   = &Module{}
 	_ modules.PeriodicOperationsModule = &Module{}
+	_ modules.MessageModule            = &Module{}
+	_ modules.AuthzMessageModule       = &Module{}
 )
 
 // Module represents the x/staking module
