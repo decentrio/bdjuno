@@ -55,12 +55,12 @@ func (m *Module) updateTokenHolder(height int64, tokens sdk.Coins) error {
 	total := make(map[string]int)
 	for _, tokenUnit := range tokens {
 		denom := tokenUnit.Denom
-		numHolders, err := m.keeper.GetDenomOwners(height, denom)
+		holders, err := m.keeper.GetDenomOwners(height, denom)
 		if err != nil {
 			return fmt.Errorf("error while updating holder: %s", err)
 		}
 
-		total[denom] = numHolders
+		total[denom] = len(holders)
 	}
 
 	if len(total) == 0 {

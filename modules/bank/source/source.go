@@ -3,6 +3,7 @@ package source
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/forbole/callisto/v4/types"
 )
 
@@ -12,5 +13,5 @@ type Source interface {
 
 	// -- For hasura action --
 	GetAccountBalance(address string, height int64) ([]sdk.Coin, error)
-	GetDenomOwners(height int64, denom string) (int, error)
+	GetDenomOwners(height int64, denom string) ([]*banktypes.DenomOwner, error)
 }
