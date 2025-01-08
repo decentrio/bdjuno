@@ -57,6 +57,7 @@ func (m *Module) UpdateMultiStakingLocks(height int64) error {
 	fmt.Println("abc3")
 	multiStakingLocks, err := m.source.GetMultiStakingLocks(height)
 	if err != nil {
+		fmt.Println("abc8")
 		return err
 	}
 	fmt.Println("abc4", len(multiStakingLocks))
