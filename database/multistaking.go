@@ -138,7 +138,7 @@ func (db *Db) SaveBondedToken(height int64, multiStakingLocks []*multistakingtyp
 			total[denom].Add(amount)
 		}
 	}
-
+	fmt.Println("abc5", len(total))
 	if len(total) == 0 {
 		return nil
 	}
@@ -167,7 +167,7 @@ WHERE token_bonded.height <= excluded.height`
 	if err != nil {
 		return fmt.Errorf("error while saving token_bonded: %s", err)
 	}
-
+	fmt.Println("abc6")
 	return nil
 }
 

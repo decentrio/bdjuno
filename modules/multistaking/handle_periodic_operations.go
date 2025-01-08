@@ -25,11 +25,13 @@ func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
 func (m *Module) UpdateMultiStaking() error {
 	log.Trace().Str("module", "multistaking").Str("operation", "multistaking lock").
 		Msg("updating multistaking lock")
+	fmt.Println("abc1")
 
 	block, err := m.db.GetLastBlockHeightAndTimestamp()
 	if err != nil {
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}
+	fmt.Println("abc2")
 	err = m.UpdateMultiStakingLocks(block.Height)
 	if err != nil {
 		return fmt.Errorf("error while update UpdateMultiStakingLocks: %s", err)
@@ -52,16 +54,17 @@ func (m *Module) UpdateMultiStakingLocks(height int64) error {
 	log.Trace().Str("module", "multistaking").Str("operation", "multistaking lock").
 		Msg("updating multistaking lock")
 
+	fmt.Println("abc3")
 	multiStakingLocks, err := m.source.GetMultiStakingLocks(height)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("abc4", len(multiStakingLocks))
 	err = m.db.SaveBondedToken(height, multiStakingLocks)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("abc7")
 	return m.db.SaveMultiStakingLocks(height, multiStakingLocks)
 }
 
