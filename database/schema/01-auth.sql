@@ -10,12 +10,6 @@ CREATE TYPE COIN AS
     amount TEXT
 );
 
-CREATE TYPE MS_UNLOCK_ENTRY AS
-(
-    creation_height  BIGINT,
-    unlock_coin COIN
-);
-
 /* ---- AUTH/ VESTING ACCOUNT ---- */
 CREATE TABLE vesting_account
 (

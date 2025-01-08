@@ -210,7 +210,7 @@ func (db *Db) SaveMSEvent(msEvents []dbtypes.MSEvent, height int64) error {
 	var param []interface{}
 	for i, msEvent := range msEvents {
 		vi := i * 5
-		query += fmt.Sprintf("($%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4, vi+5)
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4, vi+5)
 		param = append(param, height, msEvent.Name, msEvent.ValAddr, msEvent.DelAddr, msEvent.Amount)
 	}
 
