@@ -86,14 +86,48 @@ func (db *Db) SaveUnbondingToken(height int64, multiStakingUnlocks []*multistaki
 		for _, entry := range entries {
 			denom := entry.UnlockingCoin.Denom
 			amount := entry.UnlockingCoin.Amount
-			if total[denom].IsNil() {
+			value, exists := total[denom]
+			if !exists {
 				total[denom] = amount
 			} else {
-				total[denom].Add(amount)
+				total[denom] = value.Add(amount)
 			}
 		}
 	}
 
+	if len(total) == 0 {
+		return nil
+	}
+
+	query := `INSERT INTO token_unbonding (denom, amount, height) VALUES`
+
+	var param []interface{}
+
+	i := 0
+	for denom, amount := range total {
+		vi := i * 3
+		query += fmt.Sprintf("($%d,$%d,$%d),", vi+1, vi+2, vi+3)
+
+		param = append(param, denom, amount.String(), height)
+		i++
+	}
+
+	query = query[:len(query)-1] // Remove trailing ","
+	query += `
+ON CONFLICT (denom) DO UPDATE 
+	SET amount = excluded.amount,
+		height = excluded.height
+WHERE token_unbonding.height <= excluded.height`
+
+	_, err := db.SQL.Exec(query, param...)
+	if err != nil {
+		return fmt.Errorf("error while saving token_unbonding: %s", err)
+	}
+
+	return nil
+}
+
+func (db *Db) SaveUnbondingToken2(height int64, total map[string]cosmossdk_io_math.Int) error {
 	if len(total) == 0 {
 		return nil
 	}
@@ -132,10 +166,11 @@ func (db *Db) SaveBondedToken(height int64, multiStakingLocks []*multistakingtyp
 	for _, msLock := range multiStakingLocks {
 		denom := msLock.LockedCoin.Denom
 		amount := msLock.LockedCoin.Amount
-		if total[denom].IsNil() {
+		value, exists := total[denom]
+		if !exists {
 			total[denom] = amount
 		} else {
-			total[denom].Add(amount)
+			total[denom] = value.Add(amount)
 		}
 	}
 
@@ -167,7 +202,40 @@ WHERE token_bonded.height <= excluded.height`
 	if err != nil {
 		return fmt.Errorf("error while saving token_bonded: %s", err)
 	}
-	
+
+	return nil
+}
+
+func (db *Db) SaveBondedToken2(height int64, total map[string]cosmossdk_io_math.Int) error {
+	if len(total) == 0 {
+		return nil
+	}
+
+	query := `INSERT INTO token_bonded (denom, amount, height) VALUES`
+
+	var param []interface{}
+
+	i := 0
+	for denom, amount := range total {
+		vi := i * 3
+		query += fmt.Sprintf("($%d,$%d,$%d),", vi+1, vi+2, vi+3)
+
+		param = append(param, denom, amount.String(), height)
+		i++
+	}
+
+	query = query[:len(query)-1] // Remove trailing ","
+	query += `
+ON CONFLICT (denom) DO UPDATE 
+	SET amount = excluded.amount,
+		height = excluded.height
+WHERE token_bonded.height <= excluded.height`
+
+	_, err := db.SQL.Exec(query, param...)
+	if err != nil {
+		return fmt.Errorf("error while saving token_bonded: %s", err)
+	}
+
 	return nil
 }
 

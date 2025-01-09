@@ -49,6 +49,14 @@ func (coin *MSCoin) Scan(src interface{}) error {
 	return nil
 }
 
+func (coin *MSCoin) getDenom() string {
+	return coin.Denom
+}
+
+func (coin *MSCoin) getAmount() string {
+	return coin.Amount
+}
+
 type MSCoins []*MSCoin
 
 // Scan implements sql.Scanner
@@ -156,4 +164,24 @@ func (coins *UnlockEntries) Scan(src interface{}) error {
 
 	*coins = coinsV
 	return nil
+}
+
+type LockRow struct {
+	StakerAddr string   `db:"staker_addr"`
+	ValAddr    string   `db:"val_addr"`
+	MsLock     *MSCoins `db:"ms_lock"`
+	Height     int64    `db:"height"`
+}
+
+type UnlockRow struct {
+	StakerAddr string         `db:"staker_addr"`
+	ValAddr    string         `db:"val_addr"`
+	Entries    *UnlockEntries `db:"unlock_entry"`
+	Height     int64          `db:"height"`
+}
+
+type MSTokenRow struct {
+	Denom  string `db:"denom"`
+	Amount string `db:"amount"`
+	Height int64  `db:"height"`
 }
