@@ -11,6 +11,7 @@ select_permissions:
     columns:
     - val_addr
     - denom
+    - height
     filter: {}
     limit: 100
   role: anonymous
