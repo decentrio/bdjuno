@@ -93,6 +93,13 @@ array_relationships:
       table:
         name: proposal_validator_status_snapshot
         schema: public
+- name: validator_denom
+  using:
+    foreign_key_constraint_on:
+      column: val_addr
+      table:
+        name: validator_denom
+        schema: public
 select_permissions:
 - permission:
     allow_aggregations: false
