@@ -37,7 +37,7 @@ CREATE INDEX ms_unlocks_height_index ON ms_unlocks (height);
 
 CREATE TABLE validator_denom
 (
-    val_addr    TEXT    NOT NULL PRIMARY KEY,
+    val_addr   TEXT NOT NULL REFERENCES validator (consensus_address) PRIMARY KEY,
     denom      TEXT NOT NULL,
     height     BIGINT     NOT NULL
 );
