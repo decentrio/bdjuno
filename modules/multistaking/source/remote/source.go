@@ -53,6 +53,26 @@ func (s Source) GetMultiStakingLocks(height int64) ([]*multistakingtypes.MultiSt
 	return multiStakingLock, nil
 }
 
+func (s Source) GetMultiStakingLock(height int64, stakerAddr string, valAddr string) (*multistakingtypes.MultiStakingLock, error) {
+	ctx := remote.GetHeightRequestContext(s.Ctx, height)
+
+	res, err := s.msClient.MultiStakingLock(
+		ctx,
+		&multistakingtypes.QueryMultiStakingLockRequest{
+			MultiStakerAddress: stakerAddr,
+			ValidatorAddress:   valAddr,
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting total supply: %s", err)
+	}
+
+	if !res.Found {
+		return nil, nil
+	}
+
+	return res.Lock, nil
+}
+
 func (s Source) GetMultiStakingUnlocks(height int64) ([]*multistakingtypes.MultiStakingUnlock, error) {
 	ctx := remote.GetHeightRequestContext(s.Ctx, height)
 
@@ -78,6 +98,26 @@ func (s Source) GetMultiStakingUnlocks(height int64) ([]*multistakingtypes.Multi
 	}
 
 	return multiStakingUnlock, nil
+}
+
+func (s Source) GetMultiStakingUnlock(height int64, stakerAddr string, valAddr string) (*multistakingtypes.MultiStakingUnlock, error) {
+	ctx := remote.GetHeightRequestContext(s.Ctx, height)
+
+	res, err := s.msClient.MultiStakingUnlock(
+		ctx,
+		&multistakingtypes.QueryMultiStakingUnlockRequest{
+			MultiStakerAddress: stakerAddr,
+			ValidatorAddress:   valAddr,
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting multiStakingUnlock: %s", err)
+	}
+
+	if !res.Found {
+		return nil, nil
+	}
+
+	return res.Unlock, nil
 }
 
 func (s Source) GetValidators(height int64, status string) ([]multistakingtypes.ValidatorInfo, error) {

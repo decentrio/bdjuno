@@ -59,6 +59,52 @@ func (s Source) GetMultiStakingLocks(height int64) ([]*multistakingtypes.MultiSt
 	return multiStakingLock, nil
 }
 
+func (s Source) GetMultiStakingLock(height int64, stakerAddr string, valAddr string) (*multistakingtypes.MultiStakingLock, error) {
+	ctx, err := s.LoadHeight(height)
+	if err != nil {
+		return nil, fmt.Errorf("error while loading height: %s", err)
+	}
+
+	res, err := s.qs.MultiStakingLock(
+		sdk.WrapSDKContext(ctx),
+		&multistakingtypes.QueryMultiStakingLockRequest{
+			MultiStakerAddress: stakerAddr,
+			ValidatorAddress:   valAddr,
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting multiStakingLock: %s", err)
+	}
+
+	if !res.Found {
+		return nil, nil
+	}
+
+	return res.Lock, nil
+}
+
+func (s Source) GetMultiStakingUnlock(height int64, stakerAddr string, valAddr string) (*multistakingtypes.MultiStakingUnlock, error) {
+	ctx, err := s.LoadHeight(height)
+	if err != nil {
+		return nil, fmt.Errorf("error while loading height: %s", err)
+	}
+
+	res, err := s.qs.MultiStakingUnlock(
+		sdk.WrapSDKContext(ctx),
+		&multistakingtypes.QueryMultiStakingUnlockRequest{
+			MultiStakerAddress: stakerAddr,
+			ValidatorAddress:   valAddr,
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting multiStakingunLock: %s", err)
+	}
+
+	if !res.Found {
+		return nil, nil
+	}
+
+	return res.Unlock, nil
+}
+
 func (s Source) GetMultiStakingUnlocks(height int64) ([]*multistakingtypes.MultiStakingUnlock, error) {
 	ctx, err := s.LoadHeight(height)
 	if err != nil {
