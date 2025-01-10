@@ -5,6 +5,7 @@ import (
 
 	cosmossdk_io_math "cosmossdk.io/math"
 	dbtypes "github.com/forbole/callisto/v4/database/types"
+	"github.com/forbole/callisto/v4/types"
 
 	"github.com/lib/pq"
 	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
@@ -239,7 +240,7 @@ WHERE token_bonded.height <= excluded.height`
 	return nil
 }
 
-func (db *Db) SaveValidatorDenom(height int64, validatorInfo []multistakingtypes.ValidatorInfo) error {
+func (db *Db) SaveValidatorDenom(height int64, validatorInfo []types.MSValidatorInfo) error {
 	if len(validatorInfo) == 0 {
 		return nil
 	}
@@ -250,7 +251,7 @@ func (db *Db) SaveValidatorDenom(height int64, validatorInfo []multistakingtypes
 	for i, info := range validatorInfo {
 		vi := i * 3
 		query += fmt.Sprintf("($%d,$%d,$%d),", vi+1, vi+2, vi+3)
-		param = append(param, info.OperatorAddress, info.BondDenom, height)
+		param = append(param, info.ConsensusAddress, info.Denom, height)
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","

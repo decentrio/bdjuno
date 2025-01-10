@@ -14,6 +14,16 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+func (m *Module) getValidatorConsPubKeyByCreateMsg(msg *stakingtypes.MsgCreateValidator) (cryptotypes.PubKey, error) {
+	var pubKey cryptotypes.PubKey
+	err := m.cdc.UnpackAny(msg.Pubkey, &pubKey)
+	return pubKey, err
+}
+
+func convertPubkeyToAddr(pubkey cryptotypes.PubKey) string {
+	return sdk.ConsAddress(pubkey.Address()).String()
+}
+
 // getValidatorConsPubKey returns the consensus public key of the given validator
 func (m *Module) getValidatorConsPubKey(validator stakingtypes.Validator) (cryptotypes.PubKey, error) {
 	var pubKey cryptotypes.PubKey

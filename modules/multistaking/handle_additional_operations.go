@@ -3,6 +3,7 @@ package multistaking
 import (
 	"fmt"
 
+	"github.com/forbole/callisto/v4/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -82,5 +83,14 @@ func (m *Module) UpdateValidatorInfo(height int64) error {
 		return err
 	}
 
-	return m.db.SaveValidatorDenom(height, validatorInfo)
+	msValInfos := []types.MSValidatorInfo{}
+	for _, val := range validatorInfo {
+		valInfo, err := m.convertValidatorInfo(&val)
+		if err != nil {
+			return err
+		}
+		msValInfos = append(msValInfos, valInfo)
+	}
+
+	return m.db.SaveValidatorDenom(height, msValInfos)
 }

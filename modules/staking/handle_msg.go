@@ -9,8 +9,8 @@ import (
 	juno "github.com/forbole/juno/v6/types"
 
 	dbtypes "github.com/forbole/callisto/v4/database/types"
+	"github.com/forbole/callisto/v4/types"
 	"github.com/forbole/callisto/v4/utils"
-	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 )
 
 var msgFilter = map[string]bool{
@@ -76,10 +76,14 @@ func (m *Module) handleMsgCreateValidator(height int64, msg *stakingtypes.MsgCre
 		return fmt.Errorf("error while refreshing validator from MsgCreateValidator: %s", err)
 	}
 
-	var infos []multistakingtypes.ValidatorInfo
-	validatorInfo := multistakingtypes.ValidatorInfo{
-		OperatorAddress: msg.ValidatorAddress,
-		BondDenom:       msg.Value.Denom,
+	var infos []types.MSValidatorInfo
+	consPubkey, err := m.getValidatorConsPubKeyByCreateMsg(msg)
+	if err != nil {
+		return err
+	}
+	validatorInfo := types.MSValidatorInfo{
+		ConsensusAddress: convertPubkeyToAddr(consPubkey),
+		Denom:            msg.Value.Denom,
 	}
 	infos = append(infos, validatorInfo)
 
