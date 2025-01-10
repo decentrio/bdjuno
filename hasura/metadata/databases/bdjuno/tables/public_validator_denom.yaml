@@ -4,7 +4,7 @@ table:
 object_relationships:
 - name: validator
   using:
-    foreign_key_constraint_on: consensus_address
+    foreign_key_constraint_on: val_addr
 select_permissions:
 - permission:
     allow_aggregations: false
