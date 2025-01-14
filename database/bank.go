@@ -59,24 +59,24 @@ WHERE token_holder.height <= excluded.height`
 	return nil
 }
 
-func (db *Db) SaveAccountBalances(accountBalances []types.AccountBalance, height int64) error {
-	if len(accountBalances) == 0 {
+func (db *Db) SaveAccountBalances(balances []types.AccountBalance, height int64) error {
+	if len(balances) == 0 {
 		return nil
 	}
 
-	query := `INSERT INTO balance (address, balances, height) VALUES`
+	query := `INSERT INTO balance (address, amount, denom, height) VALUES`
 
 	var param []interface{}
-	for i, accountBalance := range accountBalances {
-		vi := i * 3
-		query += fmt.Sprintf("($%d,$%d,$%d),", vi+1, vi+2, vi+3)
-		param = append(param, accountBalance.Address, pq.Array(dbtypes.NewDbCoins(accountBalance.Balance)), height)
+	for i, balance := range balances {
+		vi := i * 4
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4)
+		param = append(param, balance.Address, balance.Amount, balance.Denom, height)
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","
 	query += `
-ON CONFLICT (address) DO UPDATE 
-	SET balances = excluded.balances,
+ON CONFLICT (address, denom) DO UPDATE 
+	SET amount = excluded.amount,
     	height = excluded.height
 WHERE balance.height <= excluded.height`
 

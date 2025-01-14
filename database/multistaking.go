@@ -7,7 +7,6 @@ import (
 	dbtypes "github.com/forbole/callisto/v4/database/types"
 	"github.com/forbole/callisto/v4/types"
 
-	"github.com/lib/pq"
 	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 )
 
@@ -16,25 +15,24 @@ func (db *Db) SaveMultiStakingLocks(height int64, multiStakingLocks []*multistak
 		return nil
 	}
 
-	query := `INSERT INTO ms_locks (staker_addr, val_addr, ms_lock, height) VALUES`
+	query := `INSERT INTO ms_locks (staker_addr, val_addr, denom, amount, bond_weight, height) VALUES`
 
 	var param []interface{}
 
 	for i, msLock := range multiStakingLocks {
-		vi := i * 4
-		query += fmt.Sprintf("($%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4)
+		vi := i * 6
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4, vi+5, vi+6)
 		mStakerAddr := msLock.LockID.MultiStakerAddr
 		valAddr := msLock.LockID.ValAddr
-		msCoin := dbtypes.NewMSCoin(msLock.LockedCoin)
-		var mscoins dbtypes.MSCoins
-		mscoins = append(mscoins, &msCoin)
-		param = append(param, mStakerAddr, valAddr, pq.Array(mscoins), height)
+		param = append(param, mStakerAddr, valAddr,
+			msLock.LockedCoin.Denom, msLock.LockedCoin.Amount.String(), msLock.LockedCoin.BondWeight.String(), height)
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","
 	query += `
 ON CONFLICT (staker_addr, val_addr) DO UPDATE 
-	SET ms_lock = excluded.ms_lock,
+	SET amount = excluded.amount,
+		bond_weight = excluded.bond_weight,
 		height = excluded.height
 WHERE ms_locks.height <= excluded.height`
 
@@ -51,23 +49,28 @@ func (db *Db) SaveMultiStakingUnlocks(height int64, multiStakingUnlocks []*multi
 		return nil
 	}
 
-	query := `INSERT INTO ms_unlocks (staker_addr, val_addr, unlock_entry, height) VALUES`
+	query := `INSERT INTO ms_unlocks (staker_addr, val_addr, creation_height, denom, amount, bond_weight, height) VALUES`
 
 	var param []interface{}
-
-	for i, msUnlock := range multiStakingUnlocks {
-		vi := i * 4
-		query += fmt.Sprintf("($%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4)
-		mStakerAddr := msUnlock.UnlockID.MultiStakerAddr
-		valAddr := msUnlock.UnlockID.ValAddr
+	count := 0
+	for _, msUnlock := range multiStakingUnlocks {
 		entries := msUnlock.Entries
-		param = append(param, mStakerAddr, valAddr, pq.Array(dbtypes.NewUnlockEntries(entries)), height)
+		for _, entry := range entries {
+			vi := count * 7
+			query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7)
+			mStakerAddr := msUnlock.UnlockID.MultiStakerAddr
+			valAddr := msUnlock.UnlockID.ValAddr
+			param = append(param, mStakerAddr, valAddr, entry.CreationHeight,
+				entry.UnlockingCoin.Denom, entry.UnlockingCoin.Amount.String(), entry.UnlockingCoin.BondWeight.String(), height)
+			count++
+		}
 	}
 
 	query = query[:len(query)-1] // Remove trailing ","
 	query += `
-ON CONFLICT (staker_addr, val_addr) DO UPDATE 
-	SET unlock_entry = excluded.unlock_entry,
+ON CONFLICT (staker_addr, val_addr, creation_height) DO UPDATE 
+	SET amount = excluded.amount,
+		bond_weight = excluded.bond_weight,
 		height = excluded.height
 WHERE ms_unlocks.height <= excluded.height`
 

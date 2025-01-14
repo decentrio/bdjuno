@@ -167,17 +167,22 @@ func (coins *UnlockEntries) Scan(src interface{}) error {
 }
 
 type LockRow struct {
-	StakerAddr string   `db:"staker_addr"`
-	ValAddr    string   `db:"val_addr"`
-	MsLock     *MSCoins `db:"ms_lock"`
-	Height     int64    `db:"height"`
+	StakerAddr string `db:"staker_addr"`
+	ValAddr    string `db:"val_addr"`
+	Denom      string `db:"denom"`
+	Amount     string `db:"amount"`
+	BondWeight string `db:"bond_weight"`
+	Height     int64  `db:"height"`
 }
 
 type UnlockRow struct {
-	StakerAddr string         `db:"staker_addr"`
-	ValAddr    string         `db:"val_addr"`
-	Entries    *UnlockEntries `db:"unlock_entry"`
-	Height     int64          `db:"height"`
+	StakerAddr     string `db:"staker_addr"`
+	ValAddr        string `db:"val_addr"`
+	CreationHeight string `db:"creation_height"`
+	Denom          string `db:"denom"`
+	Amount         string `db:"amount"`
+	BondWeight     string `db:"bond_weight"`
+	Height         int64  `db:"height"`
 }
 
 type MSTokenRow struct {

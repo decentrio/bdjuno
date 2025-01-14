@@ -39,12 +39,13 @@ func (s Source) GetBalances(addresses []string, height int64) ([]types.AccountBa
 		if err != nil {
 			return nil, fmt.Errorf("error while getting all balances: %s", err)
 		}
-
-		balances = append(balances, types.NewAccountBalance(
-			address,
-			balRes.Balances,
-			height,
-		))
+		for _, balance := range balRes.Balances {
+			balances = append(balances, types.NewAccountBalance(
+				address,
+				balance,
+				height,
+			))
+		}
 	}
 
 	return balances, nil

@@ -20,7 +20,8 @@ LEFT JOIN
 CREATE OR REPLACE VIEW account_summary AS
 SELECT 
     ac.address AS address,
-    COALESCE(bl.balances, NULL) AS balances
+    COALESCE(bl.amount, NULL) AS amount,
+    COALESCE(bl.denom, NULL) AS denom
 FROM 
     account ac
 LEFT JOIN 

@@ -1,25 +1,10 @@
-CREATE TYPE MS_COIN AS
-(
-    denom  TEXT,
-    amount TEXT,
-    bond_weight NUMERIC
-);
-
-CREATE TYPE MS_UNLOCK_ENTRY AS
-(
-    creation_height  BIGINT,
-    denom  TEXT,
-    amount TEXT,
-    bond_weight NUMERIC
-);
-
-/* ---- PARAMS ---- */
-
 CREATE TABLE ms_locks
 (
     staker_addr TEXT    NOT NULL,
     val_addr    TEXT    NOT NULL,
-    ms_lock MS_COIN[] NOT NULL,
+    denom       TEXT,
+    amount      TEXT,
+    bond_weight TEXT,
     height     BIGINT  NOT NULL,
     PRIMARY KEY (staker_addr, val_addr)
 );
@@ -28,9 +13,12 @@ CREATE TABLE ms_unlocks
 (
     staker_addr TEXT    NOT NULL,
     val_addr    TEXT    NOT NULL,
-    unlock_entry MS_UNLOCK_ENTRY[] NOT NULL,
+    creation_height  BIGINT,
+    denom  TEXT,
+    amount TEXT,
+    bond_weight TEXT,
     height     BIGINT  NOT NULL,
-    PRIMARY KEY (staker_addr, val_addr)
+    PRIMARY KEY (staker_addr, val_addr, creation_height)
 );
 CREATE INDEX ms_locks_height_index ON ms_locks (height);
 CREATE INDEX ms_unlocks_height_index ON ms_unlocks (height);

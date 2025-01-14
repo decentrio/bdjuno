@@ -134,21 +134,19 @@ func (m *Module) UpdateLockToken(height int64, stakerAddr string, valAddr string
 	}
 
 	for _, lockRow := range lockRows {
-		for _, lockcoin := range *lockRow.MsLock {
-			denom := lockcoin.Denom
-			amount, ok := cosmossdk_io_math.NewIntFromString(lockcoin.Amount)
+		denom := lockRow.Denom
+		amount, ok := cosmossdk_io_math.NewIntFromString(lockRow.Amount)
 
-			if !ok {
-				return fmt.Errorf("NewIntFromString false", lockcoin.Amount)
-			}
-			amount = amount.Neg()
+		if !ok {
+			return fmt.Errorf("NewIntFromString false", lockRow.Amount)
+		}
+		amount = amount.Neg()
 
-			value, exists := total[denom]
-			if !exists {
-				total[denom] = amount
-			} else {
-				total[denom] = value.Add(amount)
-			}
+		value, exists := total[denom]
+		if !exists {
+			total[denom] = amount
+		} else {
+			total[denom] = value.Add(amount)
 		}
 	}
 
@@ -192,21 +190,19 @@ func (m *Module) UpdateUnlockToken(height int64, stakerAddr string, valAddr stri
 		total[denom] = amount
 	}
 
-	for _, lockRow := range unlockRows {
-		for _, entry := range *lockRow.Entries {
-			denom := entry.Denom
-			amount, ok := cosmossdk_io_math.NewIntFromString(entry.Amount)
-			if !ok {
-				return fmt.Errorf("NewIntFromString false", entry.Amount)
-			}
-			amount = amount.Neg()
+	for _, row := range unlockRows {
+		denom := row.Denom
+		amount, ok := cosmossdk_io_math.NewIntFromString(row.Amount)
+		if !ok {
+			return fmt.Errorf("NewIntFromString false", row.Amount)
+		}
+		amount = amount.Neg()
 
-			value, exists := total[denom]
-			if !exists {
-				total[denom] = amount
-			} else {
-				total[denom] = value.Add(amount)
-			}
+		value, exists := total[denom]
+		if !exists {
+			total[denom] = amount
+		} else {
+			total[denom] = value.Add(amount)
 		}
 	}
 

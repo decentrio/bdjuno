@@ -6,8 +6,6 @@ import (
 	"github.com/forbole/callisto/v4/types"
 
 	"github.com/rs/zerolog/log"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // RunAdditionalOperations implements modules.AdditionalOperationsModule
@@ -30,7 +28,7 @@ func (m *Module) initAccountBalances() error {
 		return err
 	}
 
-	totalBalance := make(map[string]sdk.Coins)
+	var accountBalances []types.AccountBalance
 	for _, tokenUnit := range tokens {
 		denom := tokenUnit.Denom
 		holders, err := m.keeper.GetDenomOwners(block.Height, denom)
@@ -43,25 +41,8 @@ func (m *Module) initAccountBalances() error {
 			if addr == "" {
 				continue
 			}
-
-			if _, exists := totalBalance[addr]; !exists {
-				totalBalance[addr] = sdk.Coins{}
-			}
-			totalBalance[addr] = totalBalance[addr].Add(holder.Balance)
+			accountBalances = append(accountBalances, types.NewAccountBalance(addr, holder.Balance, block.Height))
 		}
-	}
-
-	if len(totalBalance) == 0 {
-		return nil
-	}
-
-	var accountBalances []types.AccountBalance
-	for addr, balance := range totalBalance {
-		accountBalances = append(accountBalances, types.NewAccountBalance(
-			addr,
-			balance,
-			block.Height,
-		))
 	}
 
 	return m.db.SaveAccountBalances(accountBalances, block.Height)

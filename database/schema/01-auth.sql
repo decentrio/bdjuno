@@ -35,8 +35,10 @@ CREATE TABLE vesting_period
 
 CREATE TABLE balance
 (
-    address         TEXT    NOT NULL PRIMARY KEY,
-    balances         COIN[]    NOT NULL,
-    height       BIGINT  NOT NULL
+    address      TEXT    NOT NULL,
+    amount       TEXT    NOT NULL,
+    denom        TEXT    NOT NULL,
+    height       BIGINT  NOT NULL,
+    PRIMARY KEY (address, denom)
 );
 CREATE INDEX balance_height_index ON balance (height);
