@@ -381,6 +381,7 @@ replace (
 	// use Realio sdk v0.46.11-realio-4
 	// github.com/cosmos/cosmos-sdk => github.com/realiotech/cosmos-sdk v0.46.11-realio-4
 	github.com/evmos/os/example_chain => github.com/evmos/os/example_chain v0.0.0-20241002122822-02a9121016ee
+	github.com/forbole/juno/v6 => github.com/decentrio/juno/v6 v6.0.2-0.20250114070111-5ece210090ec
 
 	// github.com/realio-tech/multi-staking-module => ../multi-staking
 	// github.com/evmos/os => ../evmos-os

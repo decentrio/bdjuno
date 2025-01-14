@@ -9,6 +9,7 @@ import (
 
 	"github.com/forbole/callisto/v4/modules/staking/keybase"
 	"github.com/forbole/callisto/v4/types"
+	"github.com/forbole/callisto/v4/utils"
 )
 
 // StoreValidatorFromMsgCreateValidator handles properly a MsgCreateValidator instance by
@@ -24,12 +25,16 @@ func (m *Module) StoreValidatorsFromMsgCreateValidator(height int64, msg *stakin
 		return fmt.Errorf("error while getting Avatar URL: %s", err)
 	}
 
+	selfDelegateAddr, err := utils.ConvertValidatorPubKeyToBech32String(pubKey)
+	if err != nil {
+		return fmt.Errorf("error while getting delegate address: %s", err)
+	}
 	// Save the validators
 	err = m.db.SaveValidatorData(
 		types.NewValidator(
 			sdk.ConsAddress(pubKey.Address()).String(),
 			msg.ValidatorAddress, pubKey.String(),
-			msg.DelegatorAddress,
+			selfDelegateAddr,
 			&msg.Commission.MaxChangeRate,
 			&msg.Commission.MaxRate,
 			height,
