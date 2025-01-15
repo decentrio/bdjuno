@@ -58,7 +58,7 @@ func (m *Module) saveGenesisProposals(slice govtypesv1.Proposals, genDoc *tmtype
 			*proposal.DepositEndTime,
 			proposal.VotingStartTime,
 			proposal.VotingEndTime,
-			"",
+			proposal.Proposer,
 		)
 
 		tallyResults[index] = types.NewTallyResult(
