@@ -8,6 +8,23 @@ import (
 	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 )
 
+func (m *Module) CompleteUnbonding(height int64, stakerAddr string, valAddr string) error {
+	
+	msunlock, err := m.source.GetMultiStakingUnlock(height, stakerAddr, valAddr)
+	if err != nil {
+		return err
+	}
+
+	if msunlock != nil {
+		err = m.db.SaveMultiStakingUnlock(height, msunlock)
+		if err != nil {
+			return err
+		}
+	}
+
+	return m.UpdateUnlockToken(height, stakerAddr, valAddr, msunlock)
+}
+
 func (m *Module) convertValidatorInfo(info *multistakingtypes.ValidatorInfo) (types.MSValidatorInfo, error) {
 	var pubKey cryptotypes.PubKey
 	err := m.cdc.UnpackAny(info.ConsensusPubkey, &pubKey)

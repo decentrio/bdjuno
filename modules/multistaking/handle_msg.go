@@ -74,10 +74,8 @@ func (m *Module) UpdateLockAndUnlockInfo(height int64, stakerAddr string, valAdd
 		return err
 	}
 
-	var multiStakingLocks []*multistakingtypes.MultiStakingLock
 	if mslock != nil {
-		multiStakingLocks = append(multiStakingLocks, mslock)
-		err = m.db.SaveMultiStakingLocks(height, multiStakingLocks)
+		err = m.db.SaveMultiStakingLock(height, mslock)
 		if err != nil {
 			return err
 		}
@@ -88,25 +86,22 @@ func (m *Module) UpdateLockAndUnlockInfo(height int64, stakerAddr string, valAdd
 		return err
 	}
 
-	var multiStakingUnlocks []*multistakingtypes.MultiStakingUnlock
 	if msunlock != nil {
-		multiStakingUnlocks = append(multiStakingUnlocks, msunlock)
-
-		err = m.db.SaveMultiStakingUnlocks(height, multiStakingUnlocks)
+		err = m.db.SaveMultiStakingUnlock(height, msunlock)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = m.UpdateLockToken(height, stakerAddr, valAddr, multiStakingLocks)
+	err = m.UpdateLockToken(height, stakerAddr, valAddr, mslock)
 	if err != nil {
 		return err
 	}
 
-	return m.UpdateUnlockToken(height, stakerAddr, valAddr, multiStakingUnlocks)
+	return m.UpdateUnlockToken(height, stakerAddr, valAddr, msunlock)
 }
 
-func (m *Module) UpdateLockToken(height int64, stakerAddr string, valAddr string, multiStakingLocks []*multistakingtypes.MultiStakingLock) error {
+func (m *Module) UpdateLockToken(height int64, stakerAddr string, valAddr string, lock *multistakingtypes.MultiStakingLock) error {
 	log.Trace().Str("module", "multistaking").Str("operation", "lock info").
 		Msg("updating lock and unlock info")
 
@@ -150,20 +145,17 @@ func (m *Module) UpdateLockToken(height int64, stakerAddr string, valAddr string
 		}
 	}
 
-	for _, mslock := range multiStakingLocks {
-		denom := mslock.LockedCoin.Denom
-		value, exists := total[denom]
-		if !exists {
-			total[denom] = mslock.LockedCoin.Amount
-		} else {
-			total[denom] = value.Add(mslock.LockedCoin.Amount)
-		}
+	denom := lock.LockedCoin.Denom
+	value, exists := total[denom]
+	if !exists {
+		total[denom] = lock.LockedCoin.Amount
+	} else {
+		total[denom] = value.Add(lock.LockedCoin.Amount)
 	}
-
 	return m.db.SaveBondedToken2(height, total)
 }
 
-func (m *Module) UpdateUnlockToken(height int64, stakerAddr string, valAddr string, multiStakingUnlocks []*multistakingtypes.MultiStakingUnlock) error {
+func (m *Module) UpdateUnlockToken(height int64, stakerAddr string, valAddr string, unlock *multistakingtypes.MultiStakingUnlock) error {
 	log.Trace().Str("module", "multistaking").Str("operation", "lock info").
 		Msg("updating lock and unlock info")
 
@@ -206,16 +198,14 @@ func (m *Module) UpdateUnlockToken(height int64, stakerAddr string, valAddr stri
 		}
 	}
 
-	for _, msunlock := range multiStakingUnlocks {
-		for _, entry := range msunlock.Entries {
-			denom := entry.UnlockingCoin.Denom
-			amount := entry.UnlockingCoin.Amount
-			value, exists := total[denom]
-			if !exists {
-				total[denom] = amount
-			} else {
-				total[denom] = value.Add(amount)
-			}
+	for _, entry := range unlock.Entries {
+		denom := entry.UnlockingCoin.Denom
+		amount := entry.UnlockingCoin.Amount
+		value, exists := total[denom]
+		if !exists {
+			total[denom] = amount
+		} else {
+			total[denom] = value.Add(amount)
 		}
 	}
 

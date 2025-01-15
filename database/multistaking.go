@@ -295,3 +295,68 @@ func (db *Db) SaveMSEvent(msEvents []dbtypes.MSEvent, height int64) error {
 
 	return nil
 }
+
+func (db *Db) SaveMultiStakingLock(height int64, entry *multistakingtypes.MultiStakingLock) error {
+
+	query := `INSERT INTO ms_locks (staker_addr, val_addr, denom, amount, bond_weight, height) VALUES ($1,$2,$3,$4,$5,$6)`
+
+	var param []interface{}
+	param = append(param, entry.LockID.MultiStakerAddr, entry.LockID.ValAddr,
+		entry.LockedCoin.Denom, entry.LockedCoin.Amount.String(), entry.LockedCoin.BondWeight.String(), height)
+
+	query += `
+ON CONFLICT (staker_addr, val_addr) DO UPDATE 
+	SET amount = excluded.amount,
+		bond_weight = excluded.bond_weight,
+		height = excluded.height
+WHERE ms_locks.height <= excluded.height`
+
+	_, err := db.SQL.Exec(query, param...)
+	if err != nil {
+		return fmt.Errorf("error while saving msLock: %s", err)
+	}
+
+	return nil
+}
+
+func (db *Db) SaveMultiStakingUnlock(height int64, unlock *multistakingtypes.MultiStakingUnlock) error {
+	query := `INSERT INTO ms_unlocks (staker_addr, val_addr, creation_height, denom, amount, bond_weight, height) VALUES`
+
+	var param []interface{}
+	count := 0
+	entries := unlock.Entries
+	for _, entry := range entries {
+		vi := count * 7
+		query += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),", vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7)
+		mStakerAddr := unlock.UnlockID.MultiStakerAddr
+		valAddr := unlock.UnlockID.ValAddr
+		param = append(param, mStakerAddr, valAddr, entry.CreationHeight,
+			entry.UnlockingCoin.Denom, entry.UnlockingCoin.Amount.String(), entry.UnlockingCoin.BondWeight.String(), height)
+		count++
+	}
+
+	query = query[:len(query)-1] // Remove trailing ","
+	query += `
+ON CONFLICT (staker_addr, val_addr, creation_height) DO UPDATE 
+	SET amount = excluded.amount,
+		bond_weight = excluded.bond_weight,
+		height = excluded.height
+WHERE ms_unlocks.height <= excluded.height`
+
+	_, err := db.SQL.Exec(query, param...)
+	if err != nil {
+		return fmt.Errorf("error while saving msUnlock: %s", err)
+	}
+
+	return nil
+}
+
+func (db *Db) DropMultiStakingUnlock(unlock *multistakingtypes.MultiStakingUnlock) error {
+	query := "DELETE from ms_unlocks where staker_addr = $1 AND val_addr = $2"
+	_, err := db.SQL.Exec(query, unlock.UnlockID.MultiStakerAddr, unlock.UnlockID.ValAddr)
+	if err != nil {
+		return fmt.Errorf("error while saving msLock: %s", err)
+	}
+
+	return nil
+}
