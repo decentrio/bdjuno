@@ -197,15 +197,16 @@ func (m *Module) UpdateUnlockToken(height int64, stakerAddr string, valAddr stri
 			total[denom] = value.Add(amount)
 		}
 	}
-
-	for _, entry := range unlock.Entries {
-		denom := entry.UnlockingCoin.Denom
-		amount := entry.UnlockingCoin.Amount
-		value, exists := total[denom]
-		if !exists {
-			total[denom] = amount
-		} else {
-			total[denom] = value.Add(amount)
+	if unlock != nil {
+		for _, entry := range unlock.Entries {
+			denom := entry.UnlockingCoin.Denom
+			amount := entry.UnlockingCoin.Amount
+			value, exists := total[denom]
+			if !exists {
+				total[denom] = amount
+			} else {
+				total[denom] = value.Add(amount)
+			}
 		}
 	}
 
