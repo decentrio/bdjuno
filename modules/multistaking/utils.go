@@ -9,7 +9,7 @@ import (
 )
 
 func (m *Module) CompleteUnbonding(height int64, stakerAddr string, valAddr string) error {
-	
+	m.db.DropMultiStakingUnlock(stakerAddr, valAddr)
 	msunlock, err := m.source.GetMultiStakingUnlock(height, stakerAddr, valAddr)
 	if err != nil {
 		return err

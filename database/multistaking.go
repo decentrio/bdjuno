@@ -351,9 +351,9 @@ WHERE ms_unlocks.height <= excluded.height`
 	return nil
 }
 
-func (db *Db) DropMultiStakingUnlock(unlock *multistakingtypes.MultiStakingUnlock) error {
+func (db *Db) DropMultiStakingUnlock(stakerAddr, valAddr string) error {
 	query := "DELETE from ms_unlocks where staker_addr = $1 AND val_addr = $2"
-	_, err := db.SQL.Exec(query, unlock.UnlockID.MultiStakerAddr, unlock.UnlockID.ValAddr)
+	_, err := db.SQL.Exec(query, stakerAddr, valAddr)
 	if err != nil {
 		return fmt.Errorf("error while saving msLock: %s", err)
 	}
