@@ -122,6 +122,7 @@ scalar ActionCoin
 scalar ActionDelegation
 scalar ActionEntry
 scalar ActionPagination
+scalar ActionVote
 scalar ActionRedelegation
 scalar ActionUnbondingDelegation
 
