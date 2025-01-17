@@ -46,8 +46,15 @@ type Balance struct {
 // ========================= Gov Response =========================
 
 type ProposalVotesResponse struct {
-	Votes      govtypesv1.Votes    `json:"votes"`
+	Votes      []Vote              `json:"votes"`
 	Pagination *query.PageResponse `json:"pagination"`
+}
+
+type Vote struct {
+	ProposalId uint64                           `json:"proposal_id,omitempty"`
+	Voter      string                           `json:"voter,omitempty"`
+	Options    []*govtypesv1.WeightedVoteOption `json:"options,omitempty"`
+	Metadata   string                           `json:"metadata,omitempty"`
 }
 
 // ========================= Delegation Response =========================
