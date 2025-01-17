@@ -3,10 +3,10 @@ package types
 import (
 	"time"
 
-	govv1 "cosmossdk.io/api/cosmos/gov/v1"
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtype "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -46,7 +46,7 @@ type Balance struct {
 // ========================= Gov Response =========================
 
 type ProposalVotesResponse struct {
-	Votes      govv1.Votes         `json:"votes"`
+	Votes      govtypesv1.Votes    `json:"votes"`
 	Pagination *query.PageResponse `json:"pagination"`
 }
 

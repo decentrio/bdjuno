@@ -10,5 +10,5 @@ type Source interface {
 	ProposalDeposit(height int64, id uint64, depositor string) (*govtypesv1.Deposit, error)
 	TallyResult(height int64, proposalID uint64) (*govtypesv1.TallyResult, error)
 	Params(height int64) (*govtypesv1.Params, error)
-	Votes(height int64, proposalId uint64, pagination *query.PageRequest) (govtypesv1.Votes, error)
+	Votes(height int64, proposalId uint64, pagination *query.PageRequest) (*govtypesv1.QueryVotesResponse, error)
 }
