@@ -94,7 +94,7 @@ type ActionAddress {
     address: String!
 }
 
-type ActionProposalVotes {
+type ActionProposalVotesResponse {
    votes: [ActionVote]
    pagination: ActionPagination
 }

@@ -24,7 +24,7 @@ actions:
   definition:
     kind: synchronous
     handler: "{{ACTION_BASE_URL}}/proposal_votes"
-    output_type: ActionProposalVotes
+    output_type: ActionProposalVotesResponse
     arguments:
     - name: proposal_id
       type: Int
@@ -275,7 +275,7 @@ custom_types:
     - name: coins
       type: [ActionCoin]
 
-  - name: ActionProposalVotes
+  - name: ActionProposalVotesResponse
     fields:
     - name: votes
       type: [ActionVote]
