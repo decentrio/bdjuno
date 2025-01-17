@@ -19,6 +19,22 @@ actions:
   permissions:
   - role: anonymous
 
+##### Gov #####
+- name: action_proposal_tally_result
+  definition:
+    kind: synchronous
+    handler: "{{ACTION_BASE_URL}}/proposal_tally_result"
+    output_type: ActionProposalVotes
+    arguments:
+    - name: proposal_id
+      type: Int
+    type: query
+    headers:
+    - value: application/json
+      name: Content-Type
+  permissions:
+  - role: anonymous
+
 ##### Staking / Delegatagor #####
 - name: action_delegation_reward
   definition:
@@ -251,6 +267,17 @@ custom_types:
     fields:
     - name: coins
       type: [ActionCoin]
+
+  - name: ActionProposalVotes
+    fields:
+    - name: yes_count
+      type: String!
+    - name: no_count
+      type: String!
+    - name: abstain_count
+      type: String!
+    - name: no_with_veto_count
+      type: String!
 
   - name: ActionDelegationReward
     fields:
