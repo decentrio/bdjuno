@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/forbole/juno/v6/node/local"
 
@@ -86,4 +87,22 @@ func (s Source) Params(height int64) (*govtypesv1.Params, error) {
 	}
 
 	return res.Params, nil
+}
+
+// Votes implements govsource.Source
+func (s Source) Votes(height int64, proposalId uint64, pagination *query.PageRequest) (*govtypesv1.QueryVotesResponse, error) {
+	ctx, err := s.LoadHeight(height)
+	if err != nil {
+		return nil, fmt.Errorf("error while loading height: %s", err)
+	}
+
+	res, err := s.queryClient.Votes(sdk.WrapSDKContext(ctx), &govtypesv1.QueryVotesRequest{ProposalId: proposalId, Pagination: pagination})
+	if err != nil {
+		return nil, err
+	}
+
+	return &govtypesv1.QueryVotesResponse{
+		Votes:      res.Votes,
+		Pagination: res.Pagination,
+	}, nil
 }

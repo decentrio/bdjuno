@@ -20,14 +20,20 @@ actions:
   - role: anonymous
 
 ##### Gov #####
-- name: action_proposal_tally_result
+- name: action_proposal_votes
   definition:
     kind: synchronous
-    handler: "{{ACTION_BASE_URL}}/proposal_tally_result"
+    handler: "{{ACTION_BASE_URL}}/proposal_votes"
     output_type: ActionProposalVotes
     arguments:
     - name: proposal_id
       type: Int
+    - name: offset
+      type: Int
+    - name: limit
+      type: Int
+    - name: count_total
+      type: Boolean!
     type: query
     headers:
     - value: application/json
@@ -261,6 +267,7 @@ custom_types:
   - name: ActionPagination
   - name: ActionRedelegation
   - name: ActionUnbondingDelegation
+  - name: ActionVote
 
   objects:
   - name: ActionBalance
@@ -270,14 +277,10 @@ custom_types:
 
   - name: ActionProposalVotes
     fields:
-    - name: yes_count
-      type: String!
-    - name: no_count
-      type: String!
-    - name: abstain_count
-      type: String!
-    - name: no_with_veto_count
-      type: String!
+    - name: votes
+      type: [ActionVote]
+    - name: pagination
+      type: ActionPagination
 
   - name: ActionDelegationReward
     fields:

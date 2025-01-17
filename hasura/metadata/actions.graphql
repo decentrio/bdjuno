@@ -6,6 +6,9 @@ type Query {
 
     action_proposal_votes(
         proposal_id: Int
+        offset: Int
+        limit: Int
+        count_total: Boolean
     ): ActionProposalVotes
 
     action_delegation_reward(
@@ -92,10 +95,8 @@ type ActionAddress {
 }
 
 type ActionProposalVotes {
-    yes_count: String!
-    no_count: String!
-    abstain_count: String!
-    no_with_veto_count: String!
+   votes: [ActionVote]
+   pagination: ActionPagination
 }
 
 type ActionDelegationResponse {

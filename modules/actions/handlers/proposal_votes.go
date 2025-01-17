@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func ProposalTallyResult(ctx *types.Context, payload *types.Payload) (interface{}, error) {
+func ProposalVotes(ctx *types.Context, payload *types.Payload) (interface{}, error) {
 	log.Debug().Uint64("proposal id", payload.Input.PropsalID).
 		Msg("executing account balance action")
 
@@ -16,10 +16,13 @@ func ProposalTallyResult(ctx *types.Context, payload *types.Payload) (interface{
 		return nil, err
 	}
 
-	tallyResult, err := ctx.Sources.GovSource.TallyResult(height, payload.Input.PropsalID)
+	res, err := ctx.Sources.GovSource.Votes(height, payload.Input.PropsalID, payload.GetPagination())
 	if err != nil {
 		return nil, fmt.Errorf("error while getting account balance: %s", err)
 	}
 
-	return tallyResult, nil
+	return types.ProposalVotesResponse{
+		Votes:      res.Votes,
+		Pagination: res.Pagination,
+	}, nil
 }

@@ -24,6 +24,9 @@ func (m *Module) RunAdditionalOperations() error {
 	// -- Bank --
 	worker.RegisterHandler("/account_balance", handlers.AccountBalanceHandler)
 
+	// -- Gov --
+	worker.RegisterHandler("/proposal_votes", handlers.ProposalVotes)
+
 	// -- Distribution --
 	worker.RegisterHandler("/delegation_reward", handlers.DelegationRewardHandler)
 	worker.RegisterHandler("/delegator_withdraw_address", handlers.DelegatorWithdrawAddressHandler)
