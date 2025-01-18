@@ -9,7 +9,7 @@ type Query {
         offset: Int
         limit: Int
         count_total: Boolean
-    ): ActionProposalVotes
+    ): ActionProposalVotesResponse
 
     action_delegation_reward(
         address: String!
