@@ -13,3 +13,20 @@
       use_prepared_statements: true
   tables: "!include callisto/tables/tables.yaml"
   functions: "!include callisto/functions/functions.yaml"
+  logical_models:
+    - name: amount
+      fields:
+        amount:
+          type: text
+
+  native_queries:
+  - root_field_name: supply_by_denom
+    arguments:
+      denom:
+        type: text
+        nullable: false
+    code:
+      SELECT (coin).amount AS amount
+      FROM supply, unnest(coins) AS coin
+      WHERE (coin).denom = {{denom}}
+    returns: amount
