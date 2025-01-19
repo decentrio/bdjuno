@@ -16,7 +16,7 @@
   logical_models:
     - name: amount
       fields:
-        amount:
+        - name: amount
           type: text
 
   native_queries:
