@@ -71,7 +71,7 @@
         type: text
         nullable: false
     code:
-      SELECT COUNT (*) from ms_unlocks WHERE denom = {{denom}}
+      SELECT COUNT (*) from ms_locks WHERE denom = {{denom}}
     returns: count
   - root_field_name: unlocks_count_by_denom
     arguments:
