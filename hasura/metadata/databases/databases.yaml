@@ -13,3 +13,71 @@
       use_prepared_statements: true
   tables: "!include callisto/tables/tables.yaml"
   functions: "!include callisto/functions/functions.yaml"
+  logical_models:
+    - name: amount
+      fields:
+        - name: amount
+          type: text
+    - name: count
+      fields:
+        - name: count
+          type: bigint
+  native_queries:
+  - root_field_name: supply_by_denom
+    arguments:
+      denom:
+        type: text
+        nullable: false
+    code:
+      SELECT (coin).amount AS amount
+      FROM supply, unnest(coins) AS coin
+      WHERE (coin).denom = {{denom}}
+    returns: amount
+  - root_field_name: locks_count_by_val
+    arguments:
+      address:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_locks WHERE val_addr = {{address}}
+    returns: count
+  - root_field_name: locks_count_by_del
+    arguments:
+      address:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_locks WHERE staker_addr = {{address}}
+    returns: count
+  - root_field_name: unlocks_count_by_val
+    arguments:
+      address:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_unlocks WHERE val_addr = {{address}}
+    returns: count
+  - root_field_name: unlocks_count_by_del
+    arguments:
+      address:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_unlocks WHERE staker_addr = {{address}}
+    returns: count
+  - root_field_name: locks_count_by_denom
+    arguments:
+      denom:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_locks WHERE denom = {{denom}}
+    returns: count
+  - root_field_name: unlocks_count_by_denom
+    arguments:
+      denom:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_unlocks WHERE denom = {{denom}}
+    returns: count
