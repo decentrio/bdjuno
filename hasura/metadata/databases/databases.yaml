@@ -14,11 +14,11 @@
   tables: "!include callisto/tables/tables.yaml"
   functions: "!include callisto/functions/functions.yaml"
   logical_models:
-    - name: amount
-      fields:
-        amount:
-          type: text
-          nullable: true
+  - name: amount
+    fields:
+      amount:
+        type: text
+        nullable: true
   native_queries:
   - root_field_name: supply_by_denom
     arguments:
