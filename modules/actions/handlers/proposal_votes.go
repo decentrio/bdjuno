@@ -9,9 +9,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func ProposalVotes(ctx *types.Context, payload *types.Payload) (interface{}, error) {
+func ProposalVotesHandler(ctx *types.Context, payload *types.Payload) (interface{}, error) {
 	log.Debug().Uint64("proposal id", payload.Input.PropsalID).
-		Msg("executing account balance action")
+		Msg("executing account proposal votes action")
 
 	height, err := ctx.GetHeight(payload)
 	if err != nil {
@@ -20,7 +20,7 @@ func ProposalVotes(ctx *types.Context, payload *types.Payload) (interface{}, err
 
 	res, err := ctx.Sources.GovSource.Votes(height, payload.Input.PropsalID, payload.GetPagination())
 	if err != nil {
-		return nil, fmt.Errorf("error while getting account balance: %s", err)
+		return nil, fmt.Errorf("error while getting votes: %s", err)
 	}
 
 	return types.ProposalVotesResponse{
