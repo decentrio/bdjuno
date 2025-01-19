@@ -65,3 +65,19 @@
     code:
       SELECT COUNT (*) from ms_unlocks WHERE staker_addr = {{address}}
     returns: count
+  - root_field_name: locks_count_by_denom
+    arguments:
+      denom:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_unlocks WHERE denom = {{denom}}
+    returns: count
+  - root_field_name: unlocks_count_by_denom
+    arguments:
+      denom:
+        type: text
+        nullable: false
+    code:
+      SELECT COUNT (*) from ms_unlocks WHERE denom = {{denom}}
+    returns: count
