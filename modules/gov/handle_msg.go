@@ -17,8 +17,6 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	juno "github.com/forbole/juno/v6/types"
-
-	eventutils "github.com/forbole/callisto/v4/utils/events"
 )
 
 var msgFilter = map[string]bool{
@@ -49,32 +47,32 @@ func (m *Module) HandleMsg(index int, msg juno.Message, tx *juno.Transaction) er
 	switch msg.GetType() {
 	case "/cosmos.gov.v1.MsgSubmitProposal":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1.MsgSubmitProposal{})
-		return m.handleSubmitProposalEvent(tx, cosmosMsg.Proposer, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleSubmitProposalEvent(tx, cosmosMsg.Proposer, sdk.StringifyEvents(tx.Events))
 	case "/cosmos.gov.v1beta1.MsgSubmitProposal":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1beta1.MsgSubmitProposal{})
-		return m.handleSubmitProposalEvent(tx, cosmosMsg.Proposer, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleSubmitProposalEvent(tx, cosmosMsg.Proposer, sdk.StringifyEvents(tx.Events))
 
 	case "/cosmos.gov.v1.MsgDeposit":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1.MsgDeposit{})
-		return m.handleDepositEvent(tx, cosmosMsg.Depositor, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleDepositEvent(tx, cosmosMsg.Depositor, sdk.StringifyEvents(tx.Events))
 	case "/cosmos.gov.v1beta1.MsgDeposit":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1beta1.MsgDeposit{})
-		return m.handleDepositEvent(tx, cosmosMsg.Depositor, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleDepositEvent(tx, cosmosMsg.Depositor, sdk.StringifyEvents(tx.Events))
 
 	case "/cosmos.gov.v1.MsgVote":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1.MsgVote{})
-		return m.handleVoteEvent(tx, cosmosMsg.Voter, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleVoteEvent(tx, cosmosMsg.Voter, sdk.StringifyEvents(tx.Events))
 	case "/cosmos.gov.v1beta1.MsgVote":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1beta1.MsgVote{})
-		return m.handleVoteEvent(tx, cosmosMsg.Voter, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleVoteEvent(tx, cosmosMsg.Voter, sdk.StringifyEvents(tx.Events))
 
 	case "/cosmos.gov.v1.MsgVoteWeighted":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1.MsgVoteWeighted{})
-		return m.handleVoteEvent(tx, cosmosMsg.Voter, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleVoteEvent(tx, cosmosMsg.Voter, sdk.StringifyEvents(tx.Events))
 	case "/cosmos.gov.v1beta1.MsgVoteWeighted":
 		cosmosMsg := utils.UnpackMessage(m.cdc, msg.GetBytes(), &govtypesv1beta1.MsgVoteWeighted{})
 
-		return m.handleVoteEvent(tx, cosmosMsg.Voter, eventutils.FindEventsByMsgIndex(sdk.StringifyEvents(tx.Events), index))
+		return m.handleVoteEvent(tx, cosmosMsg.Voter, sdk.StringifyEvents(tx.Events))
 	}
 
 	return nil
