@@ -28,6 +28,9 @@ import (
 	banksource "github.com/forbole/callisto/v4/modules/bank/source"
 	localbanksource "github.com/forbole/callisto/v4/modules/bank/source/local"
 	remotebanksource "github.com/forbole/callisto/v4/modules/bank/source/remote"
+	bridgesource "github.com/forbole/callisto/v4/modules/bridge/source"
+	localbridgesource "github.com/forbole/callisto/v4/modules/bridge/source/local"
+	remotebridgesource "github.com/forbole/callisto/v4/modules/bridge/source/remote"
 	distrsource "github.com/forbole/callisto/v4/modules/distribution/source"
 	localdistrsource "github.com/forbole/callisto/v4/modules/distribution/source/local"
 	remotedistrsource "github.com/forbole/callisto/v4/modules/distribution/source/remote"
@@ -51,6 +54,8 @@ import (
 	multistakingtypes "github.com/realio-tech/multi-staking-module/x/multi-staking/types"
 	realioapp "github.com/realiotech/realio-network/app"
 	assettypes "github.com/realiotech/realio-network/x/asset/types"
+	bridgekeeper "github.com/realiotech/realio-network/x/bridge/keeper"
+	bridgetypes "github.com/realiotech/realio-network/x/bridge/types"
 	"github.com/spf13/viper"
 )
 
@@ -63,6 +68,7 @@ type Sources struct {
 	StakingSource      stakingsource.Source
 	AssetSource        assetsource.Source
 	MultistakingSource multistakingsource.Source
+	BridgeSource       bridgesource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, cdc codec.Codec) (*Sources, error) {
@@ -97,6 +103,7 @@ func buildLocalSources(cfg *local.Details, cdc codec.Codec) (*Sources, error) {
 		StakingSource:      localstakingsource.NewSource(source, stakingkeeper.Querier{Keeper: app.StakingKeeper}),
 		AssetSource:        localassetsource.NewSource(source, assetkeeper.NewQueryServerImpl(realioApp.AssetKeeper)),
 		MultistakingSource: localmultistakingsource.NewSource(source, multistakingkeeper.NewQueryServerImpl(realioApp.MultiStakingKeeper)),
+		BridgeSource:       localbridgesource.NewSource(source, bridgekeeper.NewQueryServerImpl(realioApp.BridgeKeeper)),
 	}
 
 	// Mount and initialize the stores
@@ -128,5 +135,6 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 		StakingSource:      remotestakingsource.NewSource(source, stakingtypes.NewQueryClient(source.GrpcConn)),
 		AssetSource:        remoteassetsource.NewSource(source, assettypes.NewQueryClient(source.GrpcConn)),
 		MultistakingSource: remotemultistakingsource.NewSource(source, multistakingtypes.NewQueryClient(source.GrpcConn)),
+		BridgeSource:       remotebridgesource.NewSource(source, bridgetypes.NewQueryClient(source.GrpcConn)),
 	}, nil
 }
