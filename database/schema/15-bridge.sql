@@ -1,6 +1,6 @@
 CREATE TABLE bridge_in
 (
-    hash     TEXT   NOT NULL REFERENCES transaction (hash) PRIMARY KEY,
+    hash     TEXT PRIMARY KEY,
     amount   TEXT,
     denom    TEXT,
     receiver TEXT
@@ -8,7 +8,7 @@ CREATE TABLE bridge_in
 
 CREATE TABLE bridge_out
 (
-    hash     TEXT   NOT NULL REFERENCES transaction (hash) PRIMARY KEY,
+    hash     TEXT PRIMARY KEY,
     amount   TEXT,
     denom    TEXT,
     sender   TEXT
