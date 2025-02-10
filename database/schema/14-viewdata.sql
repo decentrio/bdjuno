@@ -72,3 +72,22 @@ ORDER BY
 LIMIT p_limit
 OFFSET p_offset;
 $$ LANGUAGE SQL STABLE;
+
+CREATE FUNCTION get_balance_sorted(
+  p_addr TEXT DEFAULT NULL,
+  p_limit INT DEFAULT NULL,
+  p_offset INT DEFAULT NULL,
+  p_order_direction TEXT DEFAULT 'asc'
+) RETURNS SETOF balance AS $$
+SELECT *
+FROM balance
+WHERE 
+  (p_addr IS NULL OR address = p_addr)
+ORDER BY 
+  CASE 
+    WHEN p_order_direction = 'desc' THEN amount::NUMERIC END DESC,
+  CASE 
+    WHEN p_order_direction = 'asc' THEN amount::NUMERIC END ASC
+LIMIT p_limit
+OFFSET p_offset;
+$$ LANGUAGE SQL STABLE;
