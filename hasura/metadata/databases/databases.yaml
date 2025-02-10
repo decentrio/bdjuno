@@ -81,3 +81,7 @@
     code:
       SELECT COUNT (*) from ms_unlocks WHERE denom = {{denom}}
     returns: count
+  - root_field_name: balance_count
+    code:
+      SELECT COUNT (*) from balance
+    returns: count
