@@ -82,8 +82,12 @@
       SELECT COUNT (*) from ms_unlocks WHERE denom = {{denom}}
     returns: count
   - root_field_name: balance_count
+    arguments:
+    denom:
+      type: text
+      nullable: false
     code:
-      SELECT COUNT (*) from balance
+      SELECT COUNT (*) from balance WHERE denom = {{denom}}
     returns: count
   - root_field_name: txs_count
     code:
