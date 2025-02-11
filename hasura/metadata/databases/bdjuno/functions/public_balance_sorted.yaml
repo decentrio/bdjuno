@@ -5,7 +5,7 @@ function:
     exposed_as: query
     root_field_name: balance_sorted
     arguments:
-      p_addr:
+      p_denom:
         type: text
         nullable: true
       p_limit:
