@@ -83,9 +83,9 @@
     returns: count
   - root_field_name: balance_count
     arguments:
-    denom:
-      type: text
-      nullable: false
+      denom:
+        type: text
+        nullable: false
     code:
       SELECT COUNT (*) from balance WHERE denom = {{denom}}
     returns: count
