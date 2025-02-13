@@ -17,9 +17,11 @@ import (
 func (m *Module) HandleBlock(
 	block *tmctypes.ResultBlock, res *tmctypes.ResultBlockResults, _ []*juno.Transaction, _ *tmctypes.ResultValidators,
 ) error {
-	m.updateBalanceByTxEvent(block.Block.Height, res.TxsResults)
-
-	err := m.updateBalanceByEvent(block.Block.Height, res.FinalizeBlockEvents)
+	events := res.FinalizeBlockEvents
+	for _, tx := range res.TxsResults {
+		events = append(events, tx.Events...)
+	}
+	err := m.updateBalanceByEvent(block.Block.Height, events)
 	if err != nil {
 		fmt.Printf("Error when update balance by end block: %s", err)
 	}
@@ -81,20 +83,6 @@ func (m *Module) updateBalanceByEvent(height int64, events []abci.Event) error {
 		return nil
 	}
 	return m.UpdateBalance(addresses, height)
-}
-
-// removeExpiredFeeGrantAllowances removes fee grant allowances in database that have expired
-func (m *Module) updateBalanceByTxEvent(height int64, txs []*abci.ExecTxResult) {
-	log.Debug().Str("module", "bank").Int64("height", height).
-		Msg("updating balance by tx event")
-
-	for _, tx := range txs {
-		events := tx.Events
-		err := m.updateBalanceByEvent(height, events)
-		if err != nil {
-			fmt.Printf("Error when update balance inside tx events: %s", err)
-		}
-	}
 }
 
 func (m *Module) UpdateBalance(addresses []string, height int64) error {
